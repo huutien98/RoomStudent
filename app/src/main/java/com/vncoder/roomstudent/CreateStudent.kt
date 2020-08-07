@@ -141,13 +141,11 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
             var special:String = edt_skill.text.toString().trim()
 
             val replyIntent = Intent()
-            if (masv.equals("")==null) {
-                setResult(Activity.RESULT_CANCELED, replyIntent)
-            } else {
+
                 var student = Student(id = null,avatar = avatar,masv = masv,name = name,birthday = birthday,gender = check,address = address,specialized = special)
                 replyIntent.putExtra("extraPeople",student)
                 setResult(Activity.RESULT_OK, replyIntent)
-            }
+           
             finish()
             Toasty.success(this,"create Item Sucess",Toast.LENGTH_LONG).show()
 
