@@ -5,9 +5,12 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Canvas
+import android.graphics.drawable.Animatable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -46,10 +49,31 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
         var recyclerView = findViewById<RecyclerView>(R.id.rv_recycleView)
         var sw_refresh = findViewById<SwipeRefreshLayout>(R.id.sw_refresh)
         var searchView = findViewById<SearchView>(R.id.searchView)
-
+        var isOpen = false
         studentDatabase = StudentDatabase.getData(this)
 
+        val fabOpen = AnimationUtils.loadAnimation(this,R.anim.fab_open)
+        val fabClose = AnimationUtils.loadAnimation(this,R.anim.fab_close)
+        val fabRclockwise = AnimationUtils.loadAnimation(this,R.anim.rolate)
+        val fabAntiClockwise = AnimationUtils.loadAnimation(this,R.anim.rolate2)
 
+        btn_select.setOnClickListener {
+            if (isOpen){
+                btn_addStudent.startAnimation(fabClose)
+                btn_deleteAll.startAnimation(fabClose)
+                btn_select.startAnimation(fabRclockwise)
+                isOpen = false
+            }else{
+                btn_addStudent.startAnimation(fabOpen)
+                btn_deleteAll.startAnimation(fabOpen)
+                btn_select.startAnimation(fabAntiClockwise)
+
+                btn_addStudent.isClickable
+                btn_deleteAll.isClickable
+
+                isOpen = true
+            }
+        }
 
 
         resetList()
