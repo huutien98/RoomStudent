@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.collection.LruCache
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,12 +52,9 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
     private var bitmap: Bitmap? = null
     private var mDialogView: View? = null
     private var imageUri :Uri? = null
-    private var mMemoryCache: LruCache<String, Bitmap>? = null
-
     private val actionMode: ActionMode? = null
     private val toolbar: Toolbar? = null
     private var recyclerView:RecyclerView?=null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +67,7 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
         studentDatabase = StudentDatabase.getData(this)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         ClickButton()
-        resetList()
+//        resetList()
 
         launch {
                 ListStudent = studentDatabase?.studentDao()?.getAllPerson() as MutableList<Student>
@@ -103,23 +99,31 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, position: Int) {
                 var position: Int= viewHolder.adapterPosition
-
                 val deleteditem: Student = ListStudent.get(viewHolder.adapterPosition)
                 studentAdapter.removeItem(position)
                 studentAdapter.resert(ListStudent)
                 studentAdapter.notifyDataSetChanged()
             Toasty.success(this@MainActivity,"delete Item Sucess",Toast.LENGTH_LONG).show()
-                Snackbar.make(viewHolder.itemView,"do you want undo",Snackbar.LENGTH_LONG)
-                    .setAction("Undo", View.OnClickListener {
-                        studentAdapter.restoreItem(deleteditem,position)
-                        }).show()
 
-//                launch {
-//                    studentDatabase?.studentDao()?.delete(ListStudent[position])
-//                    ListStudent = studentDatabase?.studentDao()?.getAllPerson() as MutableList<Student>
-//                    studentAdapter = StudentAdapter(listener,ListStudent)
-//                    recyclerView?.adapter = studentAdapter
-//                }
+                var view:View = rv_recycleView
+                val snackbar = Snackbar.make(view,"do you undo",Snackbar.LENGTH_SHORT)
+                snackbar?.setAction("Undo") {
+                    studentAdapter.restoreItem(deleteditem,position) }
+
+                snackbar?.addCallback(object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar, event: Int) {
+                        if (event == DISMISS_EVENT_TIMEOUT) {
+                            launch {
+                    studentDatabase?.studentDao()?.delete(ListStudent[event])
+                    ListStudent = studentDatabase?.studentDao()?.getAllPerson() as MutableList<Student>
+                    studentAdapter = StudentAdapter(listener,ListStudent)
+                    recyclerView?.adapter = studentAdapter
+                }
+                        }
+                    }
+                })
+                snackbar?.show()
+
             }
 
             override fun onChildDraw(c: Canvas,
@@ -139,7 +143,6 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
                 )
             }
         }
-
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
@@ -166,7 +169,6 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
                 studentAdapter.notifyDataSetChanged()
             }
            }
-
     }
 
     override val coroutineContext: CoroutineContext
@@ -183,7 +185,6 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
             val arrayInputStream = ByteArrayInputStream(sImage)
             var bitmap = BitmapFactory.decodeStream(arrayInputStream)
 
-
             mDialogView?.img_avatarEdit?.setImageBitmap(bitmap)
             mDialogView?.massvEdit?.setText(student.masv).toString()
             mDialogView?.edt_nameEdit?.setText(student.name).toString()
@@ -192,15 +193,12 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
             mDialogView?.edt_specializedEdit?.setText(student.specialized).toString()
             mDialogView?.rd_genderEdit?.checkedRadioButtonId
 
-
-
             mDialogView?.img_avatarEdit?.setOnClickListener{
                 val pickPhoto = Intent(
                     Intent.ACTION_PICK,
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 )
                 startActivityForResult(pickPhoto, 200)
-
             }
 
             mDialogView?.img_avatarEdit?.setImageBitmap(byteArrayToBitmap(student.avatar))
@@ -266,17 +264,17 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
         }
     }
 
-    fun resetList(){
-        sw_refresh.setOnRefreshListener {
-            launch {
-                ListStudent = studentDatabase?.studentDao()?.sortName() as MutableList<Student>
-                studentAdapter.resert(ListStudent)
-                studentAdapter.notifyDataSetChanged()
-
-                sw_refresh.isRefreshing = false
-            }
-        }
-    }
+//    fun resetList(){
+//        sw_refresh.setOnRefreshListener {
+//            launch {
+//                ListStudent = studentDatabase?.studentDao()?.sortName() as MutableList<Student>
+//                studentAdapter.resert(ListStudent)
+//                studentAdapter.notifyDataSetChanged()
+//
+//                sw_refresh.isRefreshing = false
+//            }
+//        }
+//    }
 
     fun ClickButton(){
         var isOpen = false
@@ -368,4 +366,8 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
         val arrayInputStream = ByteArrayInputStream(byteArray)
         return BitmapFactory.decodeStream(arrayInputStream)
     }
+
+
+
+
 }

@@ -123,10 +123,10 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
             override fun afterTextChanged(s: Editable) {}
         })
 
-
         btn_done.setOnClickListener {
+
             var stream = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.PNG, 90, stream)
+            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
             var byteArray = stream.toByteArray()
             bitmap?.recycle()
 
@@ -164,12 +164,11 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
                 finish()
                 Toasty.success(this,"create Item Sucess",Toast.LENGTH_LONG).show()
         }
+        }
 
         btn_cancel.setOnClickListener {
             setResult(Activity.RESULT_CANCELED)
             finish()
-        }
-
         }
 
         edt_birthday.setOnClickListener {
@@ -184,7 +183,6 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
                     edt_birthday.setText("" + mDay + "/" + mMonth + "/" + mYear)
                 }, year, month, day)
             datePickerDialog.show()
-
         }
 
     }
@@ -212,11 +210,6 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
         get() = Dispatchers.Main
 
 
-
-    fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
-        val arrayInputStream = ByteArrayInputStream(byteArray)
-        return BitmapFactory.decodeStream(arrayInputStream)
-    }
 
 
 
