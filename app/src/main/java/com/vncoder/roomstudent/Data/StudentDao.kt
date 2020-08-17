@@ -21,9 +21,10 @@ interface StudentDao {
     @Query("DELETE FROM student_table")
     suspend fun deleteAll()
 
-    @Query("UPDATE student_table SET name = :name, birthday = :birthday, gender = :gender, address = :address, specialized =:specialized WHERE masv=:massv")
+    @Query("UPDATE student_table SET avatar = :avatar ,name = :name, birthday = :birthday, gender = :gender, address = :address, specialized =:specialized WHERE masv=:masv")
     suspend fun update(
-        massv:String,
+        avatar: ByteArray,
+        masv:String,
         name: String,
         birthday: String,
         gender: String,
@@ -31,9 +32,13 @@ interface StudentDao {
         specialized: String
     )
 
-    @Query("select * from student_table where name like :name")
+    @Query("select * from student_table where name like '%'|| :name ||'%' or masv like '%'|| :name ||'%' " )
     suspend fun findByFirstName(name: String): List<Student>
 
     @Query("select * from student_table order by name ASC")
     suspend fun sortName(): List<Student>
+
+    @Query("select masv from student_table")
+    suspend fun queryCode(): List<String>
+
 }

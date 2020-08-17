@@ -60,5 +60,7 @@ dependencies {
 
     implementation 'com.github.GrenderG:Toasty:1.4.2'
 
+    implementation 'jp.wasabeef:recyclerview-animators:2.2.3'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
 }

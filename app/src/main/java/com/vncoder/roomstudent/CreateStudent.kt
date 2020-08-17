@@ -1,86 +1,82 @@
 package com.vncoder.roomstudent
 
-import android.Manifest
 import android.app.Activity
 import android.app.DatePickerDialog
-import android.app.Dialog
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
-import android.view.View
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
+import com.vncoder.roomstudent.Adapter.StudentAdapter
 import com.vncoder.roomstudent.Data.StudentDatabase
 import com.vncoder.roomstudent.Entity.Student
 import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_create_student.*
-import kotlinx.android.synthetic.main.item_adapter.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 class CreateStudent : AppCompatActivity(),CoroutineScope {
     private var REQUEST_SELECT_IMAGE =1
     private var studentDatabase: StudentDatabase? = null
+    var bitmap: Bitmap? = null
+    var list:List<String>?=null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_student)
 
         studentDatabase = StudentDatabase.getData(this)
 
-
         btn_avatar.setOnClickListener {
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_DENIED){
-                     val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE);
-                     requestPermissions(permissions, PERMISSION_CODE);
-                }
-                else{
-                     pickImageFromGallery();
-                }
-            }
-            else{
-                 pickImageFromGallery();
-            }
-
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_PICK
+            startActivityForResult(Intent.createChooser(intent, "Select"), REQUEST_SELECT_IMAGE)
         }
 
         edt_masv.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (s.length == 0) {
-                    edt_masv.setError("id is not null")
+                    edt_masv.setError("not null")
                 } else {
                     edt_masv.setError(null)
                 }
             }
             override fun afterTextChanged(s: Editable) {
-                if (s.toString() == ""){
-                    val builder = AlertDialog.Builder(this@CreateStudent)
-                    builder.setTitle("Error")
-                    builder.setMessage("masv is not null")
-                    builder.setPositiveButton("OKE"){ dialog, which ->
-                        //Toast.makeText(applicationContext,"continuar",Toast.LENGTH_SHORT).show()
+                launch {
+                    list = studentDatabase?.studentDao()?.queryCode()
+                    for (index in list!!.indices){
+
+                        if ((s.toString().trim()).compareTo(list!![index],true) == 0){
+                            val builder = AlertDialog.Builder(this@CreateStudent)
+                            builder.setTitle("Error")
+                            builder.setMessage("mã sinh viên bạn nhập đã có")
+                            builder.setPositiveButton("Nhập lại"){ dialog, which ->
+                            }
+                            val dialog: AlertDialog = builder.create()
+                            dialog.show()
+                        }
                     }
-
-                    val dialog: AlertDialog = builder.create()
-                    dialog.show()
                 }
-
             }
         })
 
@@ -117,7 +113,6 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
         edt_skill.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
-
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (s.length == 0) {
                     edt_skill.setError("name is not null")
@@ -130,7 +125,13 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
 
 
         btn_done.setOnClickListener {
-            var avatar :String = btn_avatar.toString()
+            var stream = ByteArrayOutputStream()
+            bitmap?.compress(Bitmap.CompressFormat.PNG, 90, stream)
+            var byteArray = stream.toByteArray()
+            bitmap?.recycle()
+
+
+            var avatar :ByteArray = byteArray
             var masv :String = edt_masv.text.toString().trim()
             var name:String = edt_name.text.toString().trim()
             var gender = rd_gender.checkedRadioButtonId
@@ -140,15 +141,28 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
             var address:String = edt_address.text.toString().trim()
             var special:String = edt_skill.text.toString().trim()
 
-            val replyIntent = Intent()
-
+            if (masv.isEmpty() ){
+                edt_masv.setError("Not null")
+                edt_masv.requestFocus()
+            }else if (name.isEmpty()){
+                edt_name.setError("Not null")
+                edt_name.requestFocus()
+            }else if (birthday.isEmpty()){
+                edt_birthday.setError("Not null")
+                edt_birthday.requestFocus()
+            }else if (address.isEmpty()){
+                edt_address.setError("Not null")
+                edt_address.requestFocus()
+            }else if (special.isEmpty()){
+                edt_skill.setError("Not null")
+                edt_skill.requestFocus()
+            }else {
+                val replyIntent = Intent()
                 var student = Student(id = null,avatar = avatar,masv = masv,name = name,birthday = birthday,gender = check,address = address,specialized = special)
                 replyIntent.putExtra("extraPeople",student)
                 setResult(Activity.RESULT_OK, replyIntent)
-
-            finish()
-            Toasty.success(this,"create Item Sucess",Toast.LENGTH_LONG).show()
-
+                finish()
+                Toasty.success(this,"create Item Sucess",Toast.LENGTH_LONG).show()
         }
 
         btn_cancel.setOnClickListener {
@@ -156,6 +170,7 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
             finish()
         }
 
+        }
 
         edt_birthday.setOnClickListener {
             val calendar = Calendar.getInstance()
@@ -174,32 +189,17 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
 
     }
 
-    private fun pickImageFromGallery() {
-         val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, IMAGE_PICK_CODE)
-    }
-    companion object {
-         private val IMAGE_PICK_CODE = 1000;
-         private val PERMISSION_CODE = 1001;
-    }
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when(requestCode){
-            PERMISSION_CODE -> {
-                if (grantResults.size >0 && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED){
-                     pickImageFromGallery()
-                }
-                else{
-                     Toasty.success(this, "Permission denied", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
-            btn_avatar.setImageURI(data?.data)
+        if (requestCode == REQUEST_SELECT_IMAGE && data != null && data.data != null) {
+            val uri = data.data
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                btn_avatar.setImageBitmap(bitmap)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -210,4 +210,14 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
+
+
+
+    fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
+        val arrayInputStream = ByteArrayInputStream(byteArray)
+        return BitmapFactory.decodeStream(arrayInputStream)
+    }
+
+
+
 }

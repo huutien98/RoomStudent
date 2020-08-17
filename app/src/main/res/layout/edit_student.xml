@@ -1,31 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_margin="5dp"
+    android:background="@drawable/rounded_corner_background"
+    android:layout_gravity="center"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+    <LinearLayout
+        android:background="@color/colorPicks"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/colorPrimary"
-        android:textSize="30dp"
-        android:gravity="center"
-        android:text="Edit Student"
-        android:id="@+id/tv_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <ImageView
-
-        app:layout_constraintBottom_toTopOf="@+id/massvEdit"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:background="@drawable/drawable_rounded_corner_background"
+        app:civ_border_width="2dp"
+        app:civ_border_color="#FFFFFF"
+        android:src="@drawable/ic_search"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="10dp"
+         app:layout_constraintBottom_toTopOf="@+id/massvEdit"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/img_avatarEdit"
         android:layout_width="100dp"
         android:layout_height="100dp"/>
+
     <TextView
         android:gravity="center_vertical|center_horizontal"
         android:textSize="20dp"
@@ -37,6 +43,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <EditText
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         app:layout_constraintBottom_toTopOf="@+id/edt_birthdayEdit"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -46,6 +54,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         app:layout_constraintBottom_toTopOf="@+id/edt_addressEdit"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -57,6 +67,8 @@
         android:layout_width="0dp"
         android:layout_height="50dp"/>
     <EditText
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         app:layout_constraintBottom_toTopOf="@+id/edt_specializedEdit"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -66,6 +78,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <EditText
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edt_addressEdit"
@@ -78,42 +92,45 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edt_specializedEdit"
-        android:gravity="left"
-        android:orientation="vertical"
+        android:gravity="center"
+        android:orientation="horizontal"
         android:id="@+id/rd_genderEdit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <RadioButton
+            android:layout_marginRight="30dp"
             android:checked="true"
             android:id="@+id/btn_maleEdit"
             android:text="Male"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <RadioButton
+            android:layout_marginLeft="30dp"
             android:id="@+id/btn_femaleEdit"
-            android:text="Female"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="Female" />
     </RadioGroup>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_marginTop="30dp"
-        android:src="@drawable/ic_done"
-        app:layout_constraintHorizontal_chainStyle="spread"
         android:id="@+id/btn_doneEdit"
-        app:layout_constraintRight_toLeftOf="@+id/btn_cancelEdit"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rd_genderEdit"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_done"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/btn_cancelEdit"
+        app:layout_constraintTop_toBottomOf="@+id/rd_genderEdit" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_cancelEdit"
-        android:src="@drawable/ic_close"
-        android:layout_marginTop="30dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/btn_doneEdit"
-        app:layout_constraintTop_toBottomOf="@+id/rd_genderEdit"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_close"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/btn_doneEdit"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rd_genderEdit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

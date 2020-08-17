@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
+
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,11 +9,19 @@
     android:layout_height="match_parent"
     tools:context=".CreateStudent">
 
+    <LinearLayout
+        android:background="@color/darkish_pink"
+        android:layout_width="match_parent"
+        android:layout_height="175dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:background="@drawable/ic_search"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:background="@drawable/drawable_rounded_corner_background"
+        android:src="@drawable/ic_search"
         app:layout_constraintBottom_toTopOf="@+id/layout_id"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="120dp"
         android:id="@+id/btn_avatar"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -23,6 +30,9 @@
         android:layout_height="100dp"/>
 
 <com.google.android.material.textfield.TextInputLayout
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="10dp"
     android:id="@+id/layout_id"
     app:hintEnabled="true"
     app:layout_constraintRight_toRightOf="parent"
@@ -44,6 +54,9 @@
 </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/layout_name"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -64,6 +77,9 @@
 
 
     <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:hint="click chọn ngày sinh"
         android:id="@+id/edt_birthday"
@@ -74,6 +90,9 @@
         android:layout_height="40dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/layout_address"
         app:layout_constraintTop_toBottomOf="@+id/edt_birthday"
         app:layout_constraintRight_toRightOf="parent"
@@ -91,6 +110,9 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/layout_skill"
         app:layout_constraintTop_toBottomOf="@+id/layout_address"
         app:layout_constraintRight_toRightOf="parent"
@@ -98,6 +120,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <com.google.android.material.textfield.TextInputEditText
+            android:layout_marginTop="10dp"
             android:hint="Nhập chuyên ngành"
             android:id="@+id/edt_skill"
             app:layout_constraintRight_toRightOf="parent"
@@ -111,6 +134,7 @@
 
 
     <RadioGroup
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:id="@+id/rd_gender"
         app:layout_constraintRight_toRightOf="parent"
@@ -135,7 +159,7 @@
     </RadioGroup>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:src="@drawable/ic_done"
         app:layout_constraintHorizontal_chainStyle="spread"
         android:id="@+id/btn_done"
@@ -148,7 +172,7 @@
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_cancel"
         android:src="@drawable/ic_close"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/btn_done"
         app:layout_constraintTop_toBottomOf="@+id/rd_gender"
