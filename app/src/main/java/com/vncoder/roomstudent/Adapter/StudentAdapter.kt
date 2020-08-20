@@ -1,7 +1,9 @@
 package com.vncoder.roomstudent.Adapter
 
+import android.animation.ValueAnimator
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
@@ -37,19 +39,19 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
         val tv_specialized = itemView.findViewById<TextView>(R.id.tv_skill)
 
         fun bindView(student: Student,listener: OnItemClickListener){
-            itemView.setOnClickListener { listener.onItemClick(student) }
-
+            itemView.setOnClickListener { listener.onItemClick(student)
+            }
             itemView.setOnLongClickListener{listener.onLongItemClick(student)
                 return@setOnLongClickListener true
             }
         }
 
 
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_adapter,parent,false)
+
         return ViewHolder(itemView)
     }
 
@@ -60,10 +62,9 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemStudent = ListStudent[position]
 
-        val sImage: ByteArray? = itemStudent.avatar
-        val arrayInputStream = ByteArrayInputStream(sImage)
-        val bitmap = BitmapFactory.decodeStream(arrayInputStream)
-
+//        val sImage: ByteArray? = itemStudent.avatar
+//        val arrayInputStream = ByteArrayInputStream(sImage)
+//        val bitmap = BitmapFactory.decodeStream(arrayInputStream)
 
         holder.tv_masv.setText(itemStudent?.masv).toString()
         holder.tv_name.setText(itemStudent?.name).toString()
@@ -71,12 +72,14 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
         holder.tv_address.setText(itemStudent?.address).toString()
         holder.tv_gender.setText(itemStudent.gender).toString()
         holder.tv_specialized.setText(itemStudent?.specialized.toString())
-        holder.img_avatar.setImageBitmap(byteArrayToBitmap(itemStudent.avatar))
+        holder.img_avatar.setImageURI(Uri.parse(ListStudent[position].avatar))
 
 
         holder.bindView(ListStudent[position],listener)
 
         holder.bindView(ListStudent[position],listener)
+        holder.setIsRecyclable(true)
+
     }
 
     fun resert(ListPerson: MutableList<Student>){
@@ -85,9 +88,7 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
     }
 
     fun restoreItem(student: Student?, position: Int) {
-        if (student != null) {
-            ListStudent.add(position,student)
-        }
+        ListStudent.add(position, student!!)
         notifyItemInserted(position)
     }
 
@@ -100,10 +101,10 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
         fun onItemClick(student: Student )
         fun onLongItemClick(student: Student )
     }
-    fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
-        val arrayInputStream = ByteArrayInputStream(byteArray)
-        return BitmapFactory.decodeStream(arrayInputStream)
-    }
+//    fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
+//        val arrayInputStream = ByteArrayInputStream(byteArray)
+//        return BitmapFactory.decodeStream(arrayInputStream)
+//    }
 
 
 }

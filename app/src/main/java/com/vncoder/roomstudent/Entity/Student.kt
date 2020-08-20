@@ -8,7 +8,7 @@ import java.io.Serializable
 @Entity(tableName = "student_table")
 data class Student(
     @PrimaryKey(autoGenerate = true) var id:Int?=null,
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB, name = "avatar") var avatar: ByteArray?,
+    @ColumnInfo(name = "avatar") var avatar: String,
     @ColumnInfo(name = "masv") var masv:String,
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "birthday") var birthday: String,

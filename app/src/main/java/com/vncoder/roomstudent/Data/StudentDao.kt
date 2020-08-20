@@ -23,8 +23,8 @@ interface StudentDao {
 
     @Query("UPDATE student_table SET avatar = :avatar ,name = :name, birthday = :birthday, gender = :gender, address = :address, specialized =:specialized WHERE masv=:masv")
     suspend fun update(
-        avatar: ByteArray,
         masv:String,
+        avatar: String,
         name: String,
         birthday: String,
         gender: String,

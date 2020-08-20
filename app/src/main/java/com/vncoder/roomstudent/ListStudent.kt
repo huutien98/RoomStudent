@@ -7,6 +7,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -32,6 +34,7 @@ import com.vncoder.roomstudent.Entity.Student
 import es.dmoral.toasty.Toasty
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
+import kotlinx.android.synthetic.main.activity_create_student.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.edit_student.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -43,17 +46,16 @@ import java.io.IOException
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
-class MainActivity : AppCompatActivity(),CoroutineScope {
+class ListStudent : AppCompatActivity(),CoroutineScope {
     private var REQUEST_SELECT_IMAGE =200
     private val ActivityRequestCode = 1
     private var studentDatabase : StudentDatabase? = null
     private var ListStudent  = mutableListOf<Student>()
     private var studentAdapter = StudentAdapter()
-    private var bitmap: Bitmap? = null
+
     private var mDialogView: View? = null
-    private var imageUri :Uri? = null
-    private val actionMode: ActionMode? = null
-    private val toolbar: Toolbar? = null
+    private var imageUri :String? = null
+
     private var recyclerView:RecyclerView?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,12 +68,12 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
 
         studentDatabase = StudentDatabase.getData(this)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        ClickButton()
+        ClickMenuButton()
 //        resetList()
 
         launch {
                 ListStudent = studentDatabase?.studentDao()?.getAllPerson() as MutableList<Student>
-                recyclerView?.layoutManager = LinearLayoutManager(this@MainActivity)
+                recyclerView?.layoutManager = LinearLayoutManager(this@ListStudent)
                 studentAdapter = StudentAdapter(listener,ListStudent)
                 recyclerView?.adapter=studentAdapter
                 studentAdapter.resert(ListStudent)
@@ -98,23 +100,25 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, position: Int) {
+
                 var position: Int= viewHolder.adapterPosition
                 val deleteditem: Student = ListStudent.get(viewHolder.adapterPosition)
                 studentAdapter.removeItem(position)
-                studentAdapter.resert(ListStudent)
-                studentAdapter.notifyDataSetChanged()
-            Toasty.success(this@MainActivity,"delete Item Sucess",Toast.LENGTH_LONG).show()
+
+            Toasty.success(this@ListStudent,"delete Item Sucess",Toast.LENGTH_SHORT).show()
 
                 var view:View = rv_recycleView
                 val snackbar = Snackbar.make(view,"do you undo",Snackbar.LENGTH_SHORT)
                 snackbar?.setAction("Undo") {
+                    studentAdapter.notifyDataSetChanged()
                     studentAdapter.restoreItem(deleteditem,position) }
-
+                    
                 snackbar?.addCallback(object : Snackbar.Callback() {
                     override fun onDismissed(transientBottomBar: Snackbar, event: Int) {
                         if (event == DISMISS_EVENT_TIMEOUT) {
                             launch {
-                    studentDatabase?.studentDao()?.delete(ListStudent[event])
+
+                    studentDatabase?.studentDao()?.delete(deleteditem)
                     ListStudent = studentDatabase?.studentDao()?.getAllPerson() as MutableList<Student>
                     studentAdapter = StudentAdapter(listener,ListStudent)
                     recyclerView?.adapter = studentAdapter
@@ -123,7 +127,6 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
                     }
                 })
                 snackbar?.show()
-
             }
 
             override fun onChildDraw(c: Canvas,
@@ -134,8 +137,8 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
                 actionState: Int,
                 isCurrentlyActive: Boolean
             ) {
-            RecyclerViewSwipeDecorator.Builder(this@MainActivity,c,recyclerView,viewHolder,dX,dX,actionState,isCurrentlyActive)
-                .addSwipeLeftBackgroundColor(ContextCompat.getColor(this@MainActivity,R.color.red008577))
+            RecyclerViewSwipeDecorator.Builder(this@ListStudent,c,recyclerView,viewHolder,dX,dX,actionState,isCurrentlyActive)
+                .addSwipeLeftBackgroundColor(ContextCompat.getColor(this@ListStudent,R.color.red008577))
                 .addSwipeLeftActionIcon(R.drawable.ic_delete)
                 .create()
                 .decorate()
@@ -147,29 +150,7 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_SELECT_IMAGE && resultCode == RESULT_OK) {
-            try {
-                imageUri = data?.data
-                bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
-                mDialogView?.img_avatarEdit?.setImageBitmap(bitmap)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-
-        if (requestCode == ActivityRequestCode && resultCode == Activity.RESULT_OK) {
-            launch {
-                var student : Student = data?.getSerializableExtra("extraPeople") as Student
-                studentDatabase?.studentDao()?.insert(student)
-                ListStudent = studentDatabase?.studentDao()?.getAllPerson() as MutableList<Student>
-                studentAdapter.resert(ListStudent)
-                studentAdapter.notifyDataSetChanged()
-            }
-           }
-    }
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main
@@ -177,41 +158,33 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
     private var listener = object : StudentAdapter.OnItemClickListener{
         override fun onItemClick(student: Student) {
 
-            mDialogView = LayoutInflater.from(this@MainActivity).inflate(R.layout.edit_student, null)
-            val mBuilder = AlertDialog.Builder(this@MainActivity).setView(mDialogView)
+            mDialogView = LayoutInflater.from(this@ListStudent).inflate(R.layout.edit_student, null)
+            val mBuilder = AlertDialog.Builder(this@ListStudent).setView(mDialogView)
             val mAlertDialog = mBuilder.show()
+            mAlertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//            mAlertDialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
 
-            val sImage: ByteArray? = student.avatar
-            val arrayInputStream = ByteArrayInputStream(sImage)
-            var bitmap = BitmapFactory.decodeStream(arrayInputStream)
-
-            mDialogView?.img_avatarEdit?.setImageBitmap(bitmap)
-            mDialogView?.massvEdit?.setText(student.masv).toString()
+            mDialogView?.img_avatarEdit?.setImageURI(Uri.parse(student.avatar)).toString()
+            mDialogView?.masvEdit?.setText(student.masv).toString()
             mDialogView?.edt_nameEdit?.setText(student.name).toString()
             mDialogView?.edt_addressEdit?.setText(student.address ).toString()
             mDialogView?.edt_birthdayEdit?.setText(student.birthday ).toString()
             mDialogView?.edt_specializedEdit?.setText(student.specialized).toString()
-            mDialogView?.rd_genderEdit?.checkedRadioButtonId
+            mDialogView?.rd_genderEdit?.checkedRadioButtonId.toString()
 
             mDialogView?.img_avatarEdit?.setOnClickListener{
-                val pickPhoto = Intent(
-                    Intent.ACTION_PICK,
+                val intent = Intent(
+                    Intent.ACTION_OPEN_DOCUMENT,
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 )
-                startActivityForResult(pickPhoto, 200)
+                startActivityForResult(intent, REQUEST_SELECT_IMAGE)
             }
-
-            mDialogView?.img_avatarEdit?.setImageBitmap(byteArrayToBitmap(student.avatar))
-
+            mDialogView?.img_avatarEdit?.setImageURI(Uri.parse(student.avatar)).toString()
 
             mDialogView?.btn_doneEdit?.setOnClickListener {
-                val stream = ByteArrayOutputStream()
-                this@MainActivity.bitmap?.compress(Bitmap.CompressFormat.PNG, 90, stream)
-                val byteArray = stream.toByteArray()
-                this@MainActivity.bitmap?.recycle()
 
-                var avatar : ByteArray = byteArray
-                var massv:String = mDialogView?.massvEdit?.text.toString()
+                var avatarEdit: String = imageUri.toString()
+                var masv:String = mDialogView?.masvEdit?.text.toString()
                 var nameEit:String = mDialogView?.edt_nameEdit?.text.toString()
                 var addressEit:String = mDialogView?.edt_addressEdit?.text.toString()
                 var birthhdayEit:String = mDialogView?.edt_birthdayEdit?.text.toString()
@@ -224,33 +197,34 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
 
                 launch {
                     studentDatabase?.studentDao()?.update(
-                        avatar = avatar,
-                        masv = massv,
+                        masv = masv,
+                        avatar = avatarEdit,
                         name = nameEit,
                         birthday = birthhdayEit,
-                        address = addressEit,
                         gender = check,
+                        address = addressEit,
                         specialized = skillEit
                     )
 
                     ListStudent = studentDatabase?.studentDao()?.getAllPerson() as MutableList<Student>
                     studentAdapter.resert(ListStudent)
-                    studentAdapter.notifyDataSetChanged()
                 }
-                Toasty.success(this@MainActivity,"update sucess",Toast.LENGTH_LONG).show()
+
+                Toasty.success(this@ListStudent,"update sucess",Toast.LENGTH_LONG).show()
                 mAlertDialog.dismiss()
             }
 
-            mDialogView?.btn_cancelEdit?.setOnClickListener {
+            mDialogView?.btn_exitEdit?.setOnClickListener {
                 mAlertDialog.dismiss()
             }
+
             mDialogView?.edt_birthdayEdit?.setOnClickListener {
                 val calendar = Calendar.getInstance()
                 val year = calendar.get(Calendar.YEAR)
                 val month = calendar.get(Calendar.MONTH)
                 val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-                val datePickerDialog = DatePickerDialog(this@MainActivity,
+                val datePickerDialog = DatePickerDialog(this@ListStudent,
                     DatePickerDialog.OnDateSetListener { datePicker, mYear, mMonth, mDay ->
                         mDialogView?.edt_birthdayEdit?.setText(""+mDay+"/"+mMonth+"/"+mYear)
                     },year,month,day)
@@ -260,23 +234,32 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
 
         override fun onLongItemClick(student: Student) {
 
-            Toast.makeText(this@MainActivity,"this is long click",Toast.LENGTH_LONG).show()
+            Toast.makeText(this@ListStudent,"this is long click",Toast.LENGTH_LONG).show()
+        }
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_SELECT_IMAGE && resultCode == RESULT_OK) {
+            imageUri =data?.data.toString()
+            mDialogView?.img_avatarEdit?.setImageURI(Uri.parse(imageUri))
+
+        }
+
+        if (requestCode == ActivityRequestCode && resultCode == Activity.RESULT_OK) {
+            launch {
+                var student : Student = data?.getSerializableExtra("extraPeople") as Student
+                studentDatabase?.studentDao()?.insert(student)
+                ListStudent = studentDatabase?.studentDao()?.getAllPerson() as MutableList<Student>
+                studentAdapter.resert(ListStudent)
+                studentAdapter.notifyDataSetChanged()
+
+            }
+            Toasty.success(this,"create Item Sucess",Toast.LENGTH_LONG).show()
         }
     }
 
-//    fun resetList(){
-//        sw_refresh.setOnRefreshListener {
-//            launch {
-//                ListStudent = studentDatabase?.studentDao()?.sortName() as MutableList<Student>
-//                studentAdapter.resert(ListStudent)
-//                studentAdapter.notifyDataSetChanged()
-//
-//                sw_refresh.isRefreshing = false
-//            }
-//        }
-//    }
-
-    fun ClickButton(){
+    fun ClickMenuButton(){
         var isOpen = false
         val fabOpen = AnimationUtils.loadAnimation(this,R.anim.fab_open)
         val fabClose = AnimationUtils.loadAnimation(this,R.anim.fab_close)
@@ -332,9 +315,7 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
                 }
                 return false
             }
-
         })
-
         return true
     }
 
@@ -362,10 +343,6 @@ class MainActivity : AppCompatActivity(),CoroutineScope {
         }
     }
 
-    fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
-        val arrayInputStream = ByteArrayInputStream(byteArray)
-        return BitmapFactory.decodeStream(arrayInputStream)
-    }
 
 
 

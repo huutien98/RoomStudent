@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ListStudent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -35,23 +35,27 @@
 <!--        app:layout_constraintRight_toRightOf="parent"-->
 <!--        app:layout_constraintTop_toTopOf="parent" />-->
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/sw_refresh"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+
+    <androidx.recyclerview.widget.RecyclerView
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appbar"
-         >
+        android:id="@+id/rv_recycleView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
 
-            android:id="@+id/rv_recycleView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+<!--    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout-->
+<!--        android:id="@+id/sw_refresh"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        -->
+<!--         >-->
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+<!--       -->
+
+<!--    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
 
 
 
