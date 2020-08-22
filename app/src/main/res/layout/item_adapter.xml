@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/rv_base"
+<FrameLayout
+    android:id="@+id/fr_fragme"
+    android:orientation="horizontal"
     android:layout_margin="5dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -26,15 +27,15 @@
 
 
     <androidx.cardview.widget.CardView
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="100dp"
         app:cardCornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/cv_Image"
         android:id="@+id/cv_scroll"
-        android:layout_width="0dp"
-        android:layout_height="0dp">
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
 
         <LinearLayout
             android:weightSum="6"
@@ -104,4 +105,4 @@
 
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

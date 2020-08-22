@@ -54,8 +54,7 @@ class ListStudent : AppCompatActivity(),CoroutineScope {
     private var studentAdapter = StudentAdapter()
 
     private var mDialogView: View? = null
-    private var imageUri :String? = null
-
+    private var imageUri:String? = null
     private var recyclerView:RecyclerView?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,6 +158,7 @@ class ListStudent : AppCompatActivity(),CoroutineScope {
         override fun onItemClick(student: Student) {
 
             mDialogView = LayoutInflater.from(this@ListStudent).inflate(R.layout.edit_student, null)
+
             val mBuilder = AlertDialog.Builder(this@ListStudent).setView(mDialogView)
             val mAlertDialog = mBuilder.show()
             mAlertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -184,6 +184,7 @@ class ListStudent : AppCompatActivity(),CoroutineScope {
             mDialogView?.btn_doneEdit?.setOnClickListener {
 
                 var avatarEdit: String = imageUri.toString()
+                imageUri = null
                 var masv:String = mDialogView?.masvEdit?.text.toString()
                 var nameEit:String = mDialogView?.edt_nameEdit?.text.toString()
                 var addressEit:String = mDialogView?.edt_addressEdit?.text.toString()
@@ -245,6 +246,7 @@ class ListStudent : AppCompatActivity(),CoroutineScope {
             mDialogView?.img_avatarEdit?.setImageURI(Uri.parse(imageUri))
 
         }
+
 
         if (requestCode == ActivityRequestCode && resultCode == Activity.RESULT_OK) {
             launch {

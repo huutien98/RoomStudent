@@ -8,11 +8,13 @@ import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.vncoder.roomstudent.Entity.Student
 import com.vncoder.roomstudent.R
+import kotlinx.android.synthetic.main.item_adapter.view.*
 import java.io.ByteArrayInputStream
 
 class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
@@ -30,6 +32,7 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
 
 
     class ViewHolder(itemView:View):RecyclerView.ViewHolder(itemView) {
+        val fr_fragme = itemView.findViewById<FrameLayout>(R.id.fr_fragme)
         val img_avatar = itemView.findViewById<ImageView>(R.id.img_avatar)
         val tv_masv = itemView.findViewById<TextView>(R.id.tv_masv)
         val tv_name = itemView.findViewById<TextView>(R.id.tv_name)
@@ -46,7 +49,6 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
             }
         }
 
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -59,6 +61,9 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
         return ListStudent.size
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemStudent = ListStudent[position]
 
@@ -79,6 +84,9 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
 
         holder.bindView(ListStudent[position],listener)
         holder.setIsRecyclable(true)
+
+        holder.fr_fragme.setTag(this)
+
 
     }
 
