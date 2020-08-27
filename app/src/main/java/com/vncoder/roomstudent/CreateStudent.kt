@@ -17,6 +17,7 @@ import com.vncoder.roomstudent.Data.StudentDatabase
 import com.vncoder.roomstudent.Entity.Student
 import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_create_student.*
+import kotlinx.android.synthetic.main.activity_create_student.view.*
 import kotlinx.android.synthetic.main.item_adapter.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,8 +30,7 @@ import kotlin.coroutines.CoroutineContext
 class CreateStudent : AppCompatActivity(),CoroutineScope {
     private var REQUEST_SELECT_IMAGE =1
     private var studentDatabase: StudentDatabase? = null
-//    var bitmap: Bitmap? = null
-    var list:List<String>?=null
+     var list:List<String>?=null
     private var uriImage :String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +44,6 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
             Intent.ACTION_OPEN_DOCUMENT,
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             )
-
             startActivityForResult(intent, REQUEST_SELECT_IMAGE)
         }
 
@@ -85,7 +84,7 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (s.length == 0) {
-                    edt_address.setError("name is not null")
+                    edt_address.setError("address is not null")
                 } else {
                     edt_address.setError(null)
                 }
@@ -99,7 +98,7 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (s.length == 0) {
-                    edt_skill.setError("name is not null")
+                    edt_skill.setError("majous is not null")
                 } else {
                     edt_skill.setError(null)
                 }
@@ -114,16 +113,20 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
             var avatar :String =  uriImage.toString()
             var masv :String = edt_masv.text.toString().trim()
             var name:String = edt_name.text.toString().trim()
+
             var gender = rd_gender.checkedRadioButtonId
             var isChecked = findViewById<RadioButton>(gender)
+            if (btn_male.isChecked == true){
+                gender = 1
+            }else{
+                gender = 0
+            }
+
             var birthday:String = edt_birthday.text.toString().trim()
-            var check:String = isChecked.text.toString().trim()
             var address:String = edt_address.text.toString().trim()
             var special:String = edt_skill.text.toString().trim()
 
             launch {
-
-
                 if (masv.isEmpty()){
                     edt_masv.setError("Not null")
                     edt_masv.requestFocus()
@@ -157,7 +160,14 @@ class CreateStudent : AppCompatActivity(),CoroutineScope {
                         }
                     }
                         val replyIntent = Intent()
-                        var student = Student(id = null,avatar = avatar,masv = masv,name = name,birthday = birthday,gender = check,address = address,specialized = special)
+                        var student = Student(id = null,
+                            avatar = avatar,
+                            masv = masv,
+                            name = name,
+                            birthday = birthday,
+                            gender = gender,
+                            address = address,
+                            specialized = special)
                         replyIntent.putExtra("extraPeople",student)
                         setResult(Activity.RESULT_OK, replyIntent)
                         finish()

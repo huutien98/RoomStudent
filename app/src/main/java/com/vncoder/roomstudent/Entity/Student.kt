@@ -12,7 +12,7 @@ data class Student(
     @ColumnInfo(name = "masv") var masv:String,
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "birthday") var birthday: String,
-    @ColumnInfo(name = "gender") var gender: String,
+    @ColumnInfo(name = "gender") var gender: Int,
     @ColumnInfo(name = "address") var address: String,
     @ColumnInfo(name = "specialized") var specialized: String
 ):Serializable

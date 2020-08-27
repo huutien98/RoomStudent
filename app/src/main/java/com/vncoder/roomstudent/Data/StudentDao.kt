@@ -27,7 +27,7 @@ interface StudentDao {
         avatar: String,
         name: String,
         birthday: String,
-        gender: String,
+        gender: Int,
         address: String,
         specialized: String
     )

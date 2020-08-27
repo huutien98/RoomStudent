@@ -17,21 +17,20 @@ import com.vncoder.roomstudent.R
 import kotlinx.android.synthetic.main.item_adapter.view.*
 import java.io.ByteArrayInputStream
 
-class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
+class StudentAdapter() : RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
 
-    private lateinit var  ListStudent: MutableList<Student>
+    private lateinit var ListStudent: MutableList<Student>
     private lateinit var listener: OnItemClickListener
     private val selected_items: SparseBooleanArray? = null
     private val current_selected_idx = -1
 
-    constructor(listener: OnItemClickListener,ListStudent: MutableList<Student>):this(){
-        this.listener =listener
+    constructor(listener: OnItemClickListener, ListStudent: MutableList<Student>) : this() {
+        this.listener = listener
         this.ListStudent = ListStudent
         setHasStableIds(true)
     }
 
-
-    class ViewHolder(itemView:View):RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fr_fragme = itemView.findViewById<FrameLayout>(R.id.fr_fragme)
         val img_avatar = itemView.findViewById<ImageView>(R.id.img_avatar)
         val tv_masv = itemView.findViewById<TextView>(R.id.tv_masv)
@@ -41,10 +40,12 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
         val tv_gender = itemView.findViewById<TextView>(R.id.tv_gender)
         val tv_specialized = itemView.findViewById<TextView>(R.id.tv_skill)
 
-        fun bindView(student: Student,listener: OnItemClickListener){
-            itemView.setOnClickListener { listener.onItemClick(student)
+        fun bindView(student: Student, listener: OnItemClickListener) {
+            itemView.setOnClickListener {
+                listener.onItemClick(student)
             }
-            itemView.setOnLongClickListener{listener.onLongItemClick(student)
+            itemView.setOnLongClickListener {
+                listener.onLongItemClick(student)
                 return@setOnLongClickListener true
             }
         }
@@ -52,7 +53,8 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_adapter,parent,false)
+        val itemView =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_adapter, parent, false)
 
         return ViewHolder(itemView)
     }
@@ -64,25 +66,25 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val itemStudent = ListStudent[position]
-
-//        val sImage: ByteArray? = itemStudent.avatar
-//        val arrayInputStream = ByteArrayInputStream(sImage)
-//        val bitmap = BitmapFactory.decodeStream(arrayInputStream)
 
         holder.tv_masv.setText(itemStudent?.masv).toString()
         holder.tv_name.setText(itemStudent?.name).toString()
         holder.tv_birthday.setText(itemStudent?.birthday).toString()
         holder.tv_address.setText(itemStudent?.address).toString()
-        holder.tv_gender.setText(itemStudent.gender).toString()
         holder.tv_specialized.setText(itemStudent?.specialized.toString())
         holder.img_avatar.setImageURI(Uri.parse(ListStudent[position].avatar))
+        if (itemStudent.gender == 1) {
+            holder.tv_gender.text = "male"
+        } else {
+            holder.tv_gender.text = "female"
+        }
 
+        holder.bindView(ListStudent[position], listener)
 
-        holder.bindView(ListStudent[position],listener)
-
-        holder.bindView(ListStudent[position],listener)
+        holder.bindView(ListStudent[position], listener)
         holder.setIsRecyclable(true)
 
         holder.fr_fragme.setTag(this)
@@ -90,7 +92,7 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
 
     }
 
-    fun resert(ListPerson: MutableList<Student>){
+    fun resert(ListPerson: MutableList<Student>) {
         this.ListStudent = ListPerson
         notifyDataSetChanged()
     }
@@ -106,13 +108,9 @@ class StudentAdapter (): RecyclerView.Adapter<StudentAdapter.ViewHolder>() {
     }
 
     interface OnItemClickListener {
-        fun onItemClick(student: Student )
-        fun onLongItemClick(student: Student )
+        fun onItemClick(student: Student)
+        fun onLongItemClick(student: Student)
     }
-//    fun byteArrayToBitmap(byteArray: ByteArray?): Bitmap? {
-//        val arrayInputStream = ByteArrayInputStream(byteArray)
-//        return BitmapFactory.decodeStream(arrayInputStream)
-//    }
 
 
 }
